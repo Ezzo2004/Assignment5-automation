@@ -10,6 +10,7 @@ df = pd.read_csv("ebay_tech_deals.csv",dtype=str)
 df["price"] = (
     df["price"]
     .str.replace("US $", "", regex=False)
+    .str.replace("$", "", regex=False)
     .str.replace(",", "", regex=False)
     .str.strip()
 )
@@ -17,6 +18,7 @@ df["price"] = (
 df["original_price"] = (
     df["original_price"]
     .str.replace("US $", "", regex=False)
+    .str.replace("$", "", regex=False)
     .str.replace(",", "", regex=False)
     .str.strip()
 )
