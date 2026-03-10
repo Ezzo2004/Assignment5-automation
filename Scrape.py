@@ -46,7 +46,12 @@ while True:
 
 
 driver.quit()
-df = pd.DataFrame(product_data)
-df.to_csv("ebay_tech_deals.csv", index=False)
+import os
 
-print("Saved", len(df), "products")
+file_name = "ebay_tech_deals.csv"
+df = pd.DataFrame(product_data)
+
+if os.path.exists(file_name):
+    df.to_csv(file_name, mode="a", header=False, index=False)
+else:
+    df.to_csv(file_name, index=False)
