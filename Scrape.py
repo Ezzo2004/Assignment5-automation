@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from datetime import datetime
 import time
 import pandas as pd
+import os
 
 options = Options()
 options.add_argument("--headless=new")
@@ -16,6 +17,13 @@ driver = webdriver.Chrome(options=options)
 driver.maximize_window() 
 driver.get("https://www.ebay.com/globaldeals/tech")
 
+existing_titles = set()
+
+file_name = "ebay_tech_deals.csv"
+
+if os.path.exists(file_name):
+    existing_df = pd.read_csv(file_name)
+    existing_titles = set(existing_df["title"].astype(str))
 product_data = []
 
 wait = WebDriverWait(driver, 10)
@@ -26,6 +34,10 @@ while True:
     for product in product_container:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         title = product.find_element(By.XPATH, ".//span[@itemprop='name']").text
+
+        if title in existing_titles:
+            continue
+        
         price = product.find_element(By.XPATH, ".//span[@itemprop='price']").text
         try:
             original_price = product.find_element(By.XPATH, ".//span[contains(@class,'itemtile-price-strikethrough')]").text
@@ -37,6 +49,9 @@ while True:
             shipping = "N/A"
         url = product.find_element(By.XPATH, ".//a[@itemprop='url']").get_attribute("href")
         product_data.append({"timestamp": timestamp, "title": title, "price": price, "original_price": original_price, "shipping": shipping, "url": url})
+
+        existing_titles.add(title) # update set so duplicates during scrolling are skipped
+
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
     time.sleep(2)
     new_height = driver.execute_script("return document.body.scrollHeight")
@@ -48,7 +63,7 @@ while True:
 driver.quit()
 import os
 
-file_name = "ebay_tech_deals.csv"
+
 df = pd.DataFrame(product_data)
 
 if os.path.exists(file_name):
