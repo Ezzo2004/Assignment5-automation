@@ -27,6 +27,10 @@ jobs:
 
       - name: Run Selenium scraper
         run: python Scrape.py
+      
+      - name: Run data cleaning script
+        run: python clean_data.py
+
 
       - name: Commit and Push updated CSV
         run: |
