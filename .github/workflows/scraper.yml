@@ -23,13 +23,16 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y chromium-browser
-          pip install selenium pandas webdriver-manager fake-useragent
+          pip install selenium pandas webdriver-manager fake-useragent nbconvert
 
       - name: Run Selenium scraper
         run: python Scrape.py
       
       - name: Run data cleaning script
         run: python clean_data.py
+      
+      - name: Run EDA notebook
+        run: jupyter nbconvert --to notebook --execute EDA.ipynb --output EDA.ipynb
 
 
       - name: Commit and Push updated CSV
@@ -38,5 +41,6 @@ jobs:
           git config --global user.email "actions@github.com"
           git add ebay_tech_deals.csv
           git add cleaned_ebay_deals.csv
+          git add EDA.ipynb
           git commit -m "Updated Ebay tech deals data (3-hour intervals)"
           git push
